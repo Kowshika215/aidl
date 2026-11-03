@@ -31,8 +31,8 @@ Step 7: Save and run the application.
 ```
 /*
 Program to print the client/server services using AIDL”.
-Developed by:AADHITHYAA L
-Registeration Number :212224220003
+Developed by: KOWSHIKA R
+Registeration Number :212224220049
 */
 ```
 ## Server App
@@ -95,7 +95,7 @@ public class ColorService extends Service {
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Server">
+        android:theme="@style/Theme.ServerApplication">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -106,17 +106,21 @@ public class ColorService extends Service {
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <service
             android:name=".ColorService"
-            android:exported="true">
+            android:exported="true"
+            android:enabled="true"
+            tools:ignore="ExportedService">
+
             <intent-filter>
-                <action android:name="com.example.server.IColorService" />
+                <action android:name="com.example.serverapplication.IColorService" />
             </intent-filter>
+
         </service>
     </application>
 
 </manifest>
+
 
 ```
 
@@ -134,10 +138,10 @@ interface IColorService {
 ```
 ## activity_main.xml
 ```
-
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main"
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
@@ -147,15 +151,15 @@ interface IColorService {
         android:id="@+id/btnChangeColor"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:text="@string/tap_me"
+        android:text="Tap me!"
         android:textSize="24sp" />
-</LinearLayout>
 
+</LinearLayout>
 ```
 ## MainActivity.java
 ```
 
-package com.example.client;
+package com.example.clientapplication;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -166,22 +170,29 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.widget.Button;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.server.IColorService; // this comes from the copied AIDL
+import com.example.serverapplication.IColorService;
 
 public class MainActivity extends AppCompatActivity {
+
     private IColorService colorService;
     private boolean isBound = false;
     private Button btnChangeColor;
 
     private final ServiceConnection connection = new ServiceConnection() {
+
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             colorService = IColorService.Stub.asInterface(service);
             isBound = true;
-            Toast.makeText(MainActivity.this, "Connected",
-                    Toast.LENGTH_SHORT).show();
+
+            Toast.makeText(
+                    MainActivity.this,
+                    "Connected",
+                    Toast.LENGTH_SHORT
+            ).show();
         }
 
         @Override
@@ -197,18 +208,29 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btnChangeColor = findViewById(R.id.btnChangeColor);
+
         btnChangeColor.setOnClickListener(v -> {
+
             if (isBound && colorService != null) {
                 try {
                     int randomColor = colorService.getRandomColor();
+
                     btnChangeColor.setBackgroundColor(randomColor);
+
                 } catch (RemoteException e) {
-                    Toast.makeText(this, "Error",
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(
+                            this,
+                            "Error",
+                            Toast.LENGTH_SHORT
+                    ).show();
                 }
+
             } else {
-                Toast.makeText(this, "Not connected",
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(
+                        this,
+                        "Not connected",
+                        Toast.LENGTH_SHORT
+                ).show();
             }
         });
     }
@@ -216,15 +238,25 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
         // Bind to the server's service
-        Intent intent = new Intent("com.example.server.IColorService");
-        intent.setPackage("com.example.server"); // tells Android which app
-        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+        Intent intent = new Intent(
+                "com.example.serverapplication.IColorService"
+        );
+
+        intent.setPackage("com.example.serverapplication");
+
+        bindService(
+                intent,
+                connection,
+                Context.BIND_AUTO_CREATE
+        );
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+
         if (isBound) {
             unbindService(connection);
             isBound = false;
@@ -235,11 +267,11 @@ public class MainActivity extends AppCompatActivity {
 ```
 ## Client AndroidManifest.xml
 ```
-/*
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <queries>
-        <package android:name="com.example.server" />
+        <package android:name="com.example.serverapplication" />
     </queries>
     <application
         android:allowBackup="true"
@@ -249,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Client">
+        android:theme="@style/Theme.ClientApplication">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -263,16 +295,19 @@ public class MainActivity extends AppCompatActivity {
     </application>
 
 </manifest>
-*/
 ```
 
 ## OUTPUT
-<img width="1917" height="1108" alt="Screenshot 2026-10-30 091831" src="https://github.com/user-attachments/assets/f06786b4-1580-4165-866b-025dd4b92851" />
 
-<img width="1920" height="1080" alt="637393357-21085b19-b084-40c0-8e32-988587792e8a" src="https://github.com/user-attachments/assets/68ffe35a-55be-4730-ac29-c00fa20b8e4a" />
+<img width="1917" height="1142" alt="image" src="https://github.com/user-attachments/assets/188e03a4-221d-4893-9d1b-c12388eba10e" />
 
-<img width="391" height="610" alt="Screenshot 2026-10-30 092100" src="https://github.com/user-attachments/assets/725cbbc3-bc98-4a45-8dbd-17dc377192b5" />
+<img width="1917" height="1137" alt="image" src="https://github.com/user-attachments/assets/e468a800-7746-4ac8-98b7-e09939768f6c" />
 
+<img width="1917" height="1136" alt="image" src="https://github.com/user-attachments/assets/9bb16efb-2c68-4c9b-a454-005d51026e66" />
+
+<img width="1917" height="1135" alt="image" src="https://github.com/user-attachments/assets/a7c924eb-4b94-4b05-a1d5-1fd899274ce8" />
+
+<img width="1917" height="1143" alt="image" src="https://github.com/user-attachments/assets/96079f13-91dd-4d74-831b-5720bf10e8cc" />
 
 
 
